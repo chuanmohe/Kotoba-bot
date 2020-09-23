@@ -54,10 +54,35 @@ module Bot
         ret = randEvent msg, msg.match(/^.*?([不没])+.*?$/).captures if msg =~ /^.*?([不没])+.*?$/
         ret = randEvent msg, msg.match(/^.*?([还還])是+.*?$/).captures if msg =~ /^.*?([还還])是+.*?$/
         ret = randEvent msg[4..msg.length], 'roll' if msg[0..3] == 'roll'
-
-        msgPost ret, tar
+        ret = trand msg, tar
+        msgPost ret, tar if ret != nil
       end
 
+      def trand(msg, tar)
+        ret = "[CQ:at,qq=#{tar.user_id}]掷骰\n"
+        if msg[0] =="r"
+          if msg =="r"
+            ret << "D100=" << rand(1..100).to_s
+          else 
+            tDice = 0
+            time = msg[1..msg.index('d')-1]
+            dice = msg[msg.index('d')+1..msg.length]
+            ret = time+"D"+dice+"="
+            time = 1 if time == ""
+            dice = 100 if dice == ""
+            time.to_i.times do |i|
+            diceC = rand(1..dice.to_i)
+            tDice = tDice+diceC
+            ret << diceC.to_s
+            ret << "+" unless i == time.to_i-1
+            end 
+            ret << "=" << tDice.to_s unless time == 1
+          end
+          
+        end
+
+        ret
+      end
       def randEvent(msg, type)
         msg.strip!
         msg.gsub!(/我/, '@gsubCache@')
